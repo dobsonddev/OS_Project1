@@ -66,14 +66,30 @@ void build_tree(Process **process_list, int process_count, Process **root) {
     for (int i = 0; i < process_count; i++) {
         if ((*process_list)[i].pid == 1) {
             *root = &(*process_list)[i];
-            break;
+            
+        }
+        for (int j = 0; j < process_count; j++){
+            if((*process_list)[i].pid == (*process_list)[j].ppid){
+                add_child(&(*process_list)[i], &(*process_list)[j]);
+            }
         }
     }
-
-    // TODO: Need to build out the parent-child relationships, AKA NEsting
 }
 
 
 void display_tree(Process *root, int level) {
-    // Implement display of the tree here
+    for (int i = 0; i < level; i++){
+        printf(" ");
+    }
+    printf("(%d) %s, %d kb\n", root->pid, root->comm, root->vsize / 1024);
+    for (int i = 0; i < root->child_count; i++){
+        display_tree(&root->children[i], level + 1);
+    }
+}
+
+void add_child(Process *parent, Process *child){
+    parent->children = realloc(parent->children, (parent->child_count + 1) * sizeof(Process));
+    parent->children[parent->child_count] = *child;
+    child->parent = parent;
+    parent->child_count++;
 }
