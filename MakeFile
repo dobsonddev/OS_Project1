@@ -1,0 +1,13 @@
+all: main
+
+main: main.o process.o
+	gcc main.o process.o -o main
+
+main.o: main.c
+	gcc -c main.c
+
+process.o: process.c
+	gcc -c process.c
+	
+clean:
+	rm *.o main
